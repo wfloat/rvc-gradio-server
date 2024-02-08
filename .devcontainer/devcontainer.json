@@ -1,11 +1,9 @@
 {
   "name": "TTS Container",
-  "build": {
-    // Sets the run context to one level up instead of the .devcontainer folder.
-    "context": "..",
-    // Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-    "dockerfile": "../Dockerfile"
-  },
+  "dockerComposeFile": ["../docker-compose.yaml", "docker-compose.dev.yaml"],
+  "service": "app",
+  "workspaceFolder": "/usr/src/app",
+  "shutdownAction": "stopCompose",
   "remoteUser": "devcontainer",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
