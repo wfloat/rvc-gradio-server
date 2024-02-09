@@ -1,5 +1,5 @@
 {
-  "name": "TTS Container",
+  "name": "rvc-gradio-server Container",
   "dockerComposeFile": ["../docker-compose.yaml", "docker-compose.dev.yaml"],
   "service": "app",
   "workspaceFolder": "/usr/src/app",

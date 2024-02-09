@@ -11,16 +11,13 @@ import asyncio
 import shutil
 from tempfile import NamedTemporaryFile
 
-GRADIO_SERVER_PORTS = [
-    "7865",
-    "7866",
-    "7867",
-    # "7868",
-    # "7869",
-    # "7870",
-    # "7871",
-    # "7872",
+GRADIO_SERVER_URLS = [
+    "http://rvc1:7864/",
+    "http://rvc0:7865/",
+    "http://rvc2:7867/",
 ]
+
+RVC_OUT_DIR = "shared/output"
 
 load_dotenv()
 PORT = int(os.getenv('PORT'))
@@ -29,10 +26,15 @@ clients: List[GradioClientInfo] = []
 
 app = FastAPI()
 
-def initialize_clients():
-    for port in GRADIO_SERVER_PORTS:
-        client = Client(base_url=f"http://localhost:{port}/")
-        clients.append(GradioClientInfo(port=port, client=client, busy=False))
+# client0 = Client(GRADIO_SERVER_URLS[0], output_dir=RVC_OUT_DIR)
+
+client1 = Client(GRADIO_SERVER_URLS[1], output_dir=RVC_OUT_DIR)
+
+
+# def initialize_clients():
+#     for url, index in GRADIO_SERVER_URLS:
+#         clients.append(GradioClientInfo(url=url, client=Client(url, output_dir=RVC_OUT_DIR), busy=False))
+
 
 async def get_available_client() -> Optional[GradioClientInfo]:
     while True:
@@ -42,21 +44,23 @@ async def get_available_client() -> Optional[GradioClientInfo]:
                 return client_info
         await asyncio.sleep(.05)  # Wait a bit before trying again
 
+
 @app.post("/voice_convert")
 async def voice_convert(audio: UploadFile = File(...), inference_params: InferenceParams = None, weights_sha256: str = None, f0_curve: str = None) -> Response:
     if inference_params == None:
-        raise HTTPException(status_code=400, detail="inference_params is required")
+        raise HTTPException(
+            status_code=400, detail="inference_params is required")
     if weights_sha256 == None:
-      raise HTTPException(status_code=400, detail="weights_sha256 is required")
+        raise HTTPException(
+            status_code=400, detail="weights_sha256 is required")
     if f0_curve == None:
-      raise HTTPException(status_code=400, detail="f0_curve is required")
+        raise HTTPException(status_code=400, detail="f0_curve is required")
 
     gradio_client = await get_available_client()
     model_weights_filename = f"{weights_sha256}.pth"
     model_index_path = f"shared/logs/{weights_sha256}.index"
     f0_curve_path = f"shared/f0/{f0_curve}"
 
-    
     try:
         with NamedTemporaryFile(delete=False) as tmp:
             shutil.copyfileobj(audio.file, tmp)
@@ -86,5 +90,5 @@ async def voice_convert(audio: UploadFile = File(...), inference_params: Inferen
 
 if __name__ == "__main__":
     import uvicorn
-    initialize_clients(GRADIO_SERVER_PORTS)
+    initialize_clients()
     uvicorn.run(app, host="0.0.0.0", port=PORT)

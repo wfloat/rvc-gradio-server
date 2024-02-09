@@ -11,7 +11,7 @@ pitch_extraction_method = Literal["pm", "harvest", "crepe", "rmvpe"]
 
 @dataclass
 class GradioClientInfo:
-    port: str
+    url: str
     client: Optional[Client] = None
     busy: bool = False
 

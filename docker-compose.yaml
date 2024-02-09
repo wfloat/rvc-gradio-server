@@ -16,12 +16,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    # environment:
       # - POSTGRES_CONNECTION_URL=${POSTGRES_CONNECTION_URL}
     ports:
-      - "5950:5950"
-    volumes:
-      - /usr/src/api/node_modules
+      - 5950:5950
+    # volumes:
+    #   - /usr/src/api/node_modules
     depends_on:
       - rvc0
       - rvc1
@@ -35,7 +36,7 @@ services:
       - ./shared:/app/shared
       - ./tmp/rvc0:/tmp/gradio
     ports:
-      - 7865:7865
+      - 7864:7865
   rvc1:
     <<: *rvc-common-settings
     container_name: rvc1
@@ -44,7 +45,7 @@ services:
       - ./shared:/app/shared
       - ./tmp/rvc1:/tmp/gradio
     ports:
-      - 7866:7865
+      - 7865:7865
   rvc2:
     <<: *rvc-common-settings
     container_name: rvc2
