@@ -1,0 +1,60 @@
+# # https://github.com/BretFisher/node-docker-good-defaults/blob/main/docker-compose.yml
+# version: '3.8'
+
+# x-function: &rvc-common-settings
+#   image: mitchsayre/rvc:latest
+#   deploy:
+#     resources:
+#       reservations:
+#         devices:
+#           - driver: nvidia
+#             count: 1
+#             capabilities: [ gpu ]
+
+# services:
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     command: /bin/sh -c "while sleep 1000; do :; done"
+#     # environment:
+#       # - POSTGRES_CONNECTION_URL=${POSTGRES_CONNECTION_URL}
+#     ports:
+#       - 5950:5950
+#     # volumes:
+#     #   - /usr/src/api/node_modules
+#     depends_on:
+#       - rvc0
+#       - rvc1
+#       - rvc2
+
+#   rvc0:
+#     <<: *rvc-common-settings
+#     container_name: rvc0
+#     volumes:
+#       - ./shared/weights:/app/assets/weights
+#       - ./shared:/app/shared
+#       - ./tmp/rvc0:/tmp/gradio
+#     ports:
+#       - 7864:7865
+#   rvc1:
+#     <<: *rvc-common-settings
+#     container_name: rvc1
+#     volumes:
+#       - ./shared/weights:/app/assets/weights
+#       - ./shared:/app/shared
+#       - ./tmp/rvc1:/tmp/gradio
+#     ports:
+#       - 7865:7865
+#   rvc2:
+#     <<: *rvc-common-settings
+#     container_name: rvc2
+#     volumes:
+#       - ./shared/weights:/app/assets/weights
+#       - ./shared:/app/shared
+#       - ./tmp/rvc2:/tmp/gradio
+#     ports:
+#       - 7867:7865
+
+# volumes:
+#   postgres-data:

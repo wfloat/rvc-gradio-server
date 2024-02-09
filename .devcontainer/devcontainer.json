@@ -1,34 +1,34 @@
-{
-  "name": "rvc-gradio-server Container",
-  "dockerComposeFile": ["../docker-compose.yaml", "docker-compose.dev.yaml"],
-  "service": "app",
-  "workspaceFolder": "/usr/src/app",
-  "shutdownAction": "stopCompose",
-  "remoteUser": "devcontainer",
+// {
+//   "name": "rvc-gradio-server Container",
+//   "dockerComposeFile": ["../docker-compose.yaml", "docker-compose.dev.yaml"],
+//   "service": "app",
+//   "workspaceFolder": "/usr/src/app",
+//   "shutdownAction": "stopCompose",
+//   "remoteUser": "devcontainer",
 
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  // "features": {},
+//   // Features to add to the dev container. More info: https://containers.dev/features.
+//   // "features": {},
 
-  "customizations": {
-    "vscode": {
-      "settings": {},
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-python.autopep8"
-      ]
-    }
-  },
+//   "customizations": {
+//     "vscode": {
+//       "settings": {},
+//       "extensions": [
+//         "ms-python.python",
+//         "ms-python.vscode-pylance",
+//         "ms-python.autopep8"
+//       ]
+//     }
+//   },
 
-  "forwardPorts": [5678]
-  // ,
+//   "forwardPorts": [5678]
+//   // ,
 
-  // "portsAttributes": {
-  //   "9000": {
-  //     "label": "Hello Remote World",
-  //     "onAutoForward": "notify"
-  //   }
-  // },
+//   // "portsAttributes": {
+//   //   "9000": {
+//   //     "label": "Hello Remote World",
+//   //     "onAutoForward": "notify"
+//   //   }
+//   // },
 
-  // "postCreateCommand": "yarn install"
-}
+//   // "postCreateCommand": "yarn install"
+// }
