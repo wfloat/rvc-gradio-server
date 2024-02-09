@@ -12,28 +12,25 @@ import shutil
 from tempfile import NamedTemporaryFile
 
 GRADIO_SERVER_URLS = [
-    "http://rvc1:7864/",
-    "http://rvc0:7865/",
-    "http://rvc2:7867/",
+    "http://localhost:7865/",
+    "http://localhost:7866/",
+    "http://localhost:7867/",
 ]
 
 RVC_OUT_DIR = "shared/output"
 
 load_dotenv()
-PORT = int(os.getenv('PORT'))
+PORT = int(os.getenv("PORT"))
 
 clients: List[GradioClientInfo] = []
 
 app = FastAPI()
 
-# client0 = Client(GRADIO_SERVER_URLS[0], output_dir=RVC_OUT_DIR)
 
-client1 = Client(GRADIO_SERVER_URLS[1], output_dir=RVC_OUT_DIR)
-
-
-# def initialize_clients():
-#     for url, index in GRADIO_SERVER_URLS:
-#         clients.append(GradioClientInfo(url=url, client=Client(url, output_dir=RVC_OUT_DIR), busy=False))
+def initialize_clients():
+    for url in GRADIO_SERVER_URLS:
+        client = Client(url, output_dir=RVC_OUT_DIR)
+        clients.append(GradioClientInfo(url=url, client=client, busy=False))
 
 
 async def get_available_client() -> Optional[GradioClientInfo]:
@@ -42,17 +39,23 @@ async def get_available_client() -> Optional[GradioClientInfo]:
             if not client_info.busy:
                 client_info.busy = True
                 return client_info
-        await asyncio.sleep(.05)  # Wait a bit before trying again
+        await asyncio.sleep(0.05)  # Wait a bit before trying again
 
+@app.post("/testing")
+async def voice_convert():
+    print("hiiii")
 
 @app.post("/voice_convert")
-async def voice_convert(audio: UploadFile = File(...), inference_params: InferenceParams = None, weights_sha256: str = None, f0_curve: str = None) -> Response:
+async def voice_convert(
+    audio: UploadFile = File(...),
+    inference_params: InferenceParams = None,
+    weights_sha256: str = None,
+    f0_curve: str = None,
+) -> Response:
     if inference_params == None:
-        raise HTTPException(
-            status_code=400, detail="inference_params is required")
+        raise HTTPException(status_code=400, detail="inference_params is required")
     if weights_sha256 == None:
-        raise HTTPException(
-            status_code=400, detail="weights_sha256 is required")
+        raise HTTPException(status_code=400, detail="weights_sha256 is required")
     if f0_curve == None:
         raise HTTPException(status_code=400, detail="f0_curve is required")
 
@@ -84,11 +87,12 @@ async def voice_convert(audio: UploadFile = File(...), inference_params: Inferen
         tmp_path,
         media_type="audio/wav",
         filename="speech.wav",
-        headers={"Content-Disposition": "inline; filename=speech.wav"}
+        headers={"Content-Disposition": "inline; filename=speech.wav"},
     )
 
 
 if __name__ == "__main__":
     import uvicorn
+
     initialize_clients()
     uvicorn.run(app, host="0.0.0.0", port=PORT)
