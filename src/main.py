@@ -70,9 +70,10 @@ async def voice_convert(
     f0_curve_path = f"shared/f0/{args['f0_curve']}"
 
     try:
-        with NamedTemporaryFile(suffix=".wav") as tmp:
+        with NamedTemporaryFile(delete=True, suffix=".wav") as tmp:
             shutil.copyfileobj(audio.file, tmp)
             tmp_path = tmp.name
+            input_file_path = shutil.copy(tmp_path, "shared/input")
 
         inference_params_dict = args["inference_params"]
         inference_params = InferenceParams(
@@ -89,22 +90,30 @@ async def voice_convert(
             model_weights_filename,
             model_index_path,
             f0_curve_path,
-            audio,
+            input_file_path,
             inference_params,
         )
-        print()
 
     finally:
-        if tmp_path and os.path.isfile(tmp_path):
-            os.remove(tmp_path)
+        if input_file_path and os.path.isfile(input_file_path):
+            os.remove(input_file_path)
+
         gradio_client.busy = False
 
-    return FileResponse(
-        tmp_path,
-        media_type="audio/wav",
-        filename="speech.wav",
-        headers={"Content-Disposition": "inline; filename=speech.wav"},
-    )
+        if audio_output_file and os.path.isfile(audio_output_file):
+            with open(audio_output_file, 'rb') as source_audio, NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                shutil.copyfileobj(source_audio, tmp)
+                tmp_path = tmp.name
+
+                directory_to_remove = os.path.dirname(audio_output_file)
+                shutil.rmtree(directory_to_remove)
+
+                return FileResponse(
+                    tmp_path,
+                    media_type="audio/wav",
+                    filename="speech.wav",
+                    headers={"Content-Disposition": "inline; filename=speech.wav"},
+                )
 
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
