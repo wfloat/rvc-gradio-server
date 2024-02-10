@@ -111,11 +111,11 @@ async def voice_convert(
             os.remove(input_file_path)
 
         if gradio_client.url == "http://localhost:7865/":
-            empty_directory("tmp/rvc-0")
+            empty_directory("tmp/rvc0")
         elif gradio_client.url == "http://localhost:7866/":
-            empty_directory("tmp/rvc-1")
+            empty_directory("tmp/rvc1")
         elif gradio_client.url == "http://localhost:7867/":
-            empty_directory("tmp/rvc-2")
+            empty_directory("tmp/rvc2")
 
         gradio_client.busy = False
 
