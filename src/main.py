@@ -32,6 +32,18 @@ app = FastAPI()
 logging.basicConfig(level=logging.DEBUG)
 
 
+def empty_directory(directory):
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
+
 @app.exception_handler(RequestValidationError)
 def initialize_clients():
     for url in GRADIO_SERVER_URLS:
@@ -98,10 +110,19 @@ async def voice_convert(
         if input_file_path and os.path.isfile(input_file_path):
             os.remove(input_file_path)
 
+        if gradio_client.url == "http://localhost:7865/":
+            empty_directory("tmp/rvc-0")
+        elif gradio_client.url == "http://localhost:7866/":
+            empty_directory("tmp/rvc-1")
+        elif gradio_client.url == "http://localhost:7867/":
+            empty_directory("tmp/rvc-2")
+
         gradio_client.busy = False
 
         if audio_output_file and os.path.isfile(audio_output_file):
-            with open(audio_output_file, 'rb') as source_audio, NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            with open(audio_output_file, "rb") as source_audio, NamedTemporaryFile(
+                delete=False, suffix=".wav"
+            ) as tmp:
                 shutil.copyfileobj(source_audio, tmp)
                 tmp_path = tmp.name
 
