@@ -1,6 +1,7 @@
 
 
 from dataclasses import dataclass
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any, Literal
 import requests
 import json
@@ -27,10 +28,9 @@ def to_relative_path(original_path: str, base_dir: str) -> str:
     relative_path = '.' + os.sep + os.sep.join(path_parts[index:])
     return relative_path
 
-@dataclass
-class InferenceParams:
+class InferenceParams(BaseModel):
     transpose_pitch: int
-    pitch_extraction_method: pitch_extraction_method
+    pitch_extraction_method: str
     search_feature_ratio: float
     filter_radius: int
     audio_resampling: int
