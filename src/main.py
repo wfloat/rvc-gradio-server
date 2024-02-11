@@ -81,6 +81,8 @@ async def voice_convert(
     model_index_path = f"shared/logs/{args['weights_sha256']}.index"
     f0_curve_path = f"shared/f0/{args['f0_curve']}"
 
+    audio_output_file = None
+    input_file_path = None
     try:
         with NamedTemporaryFile(delete=True, suffix=".wav") as tmp:
             shutil.copyfileobj(audio.file, tmp)
